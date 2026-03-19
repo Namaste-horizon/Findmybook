@@ -3,21 +3,28 @@
 #include <iostream>
 
 namespace {
-Book* findBookById(std::vector<Book>& catalog, int bookId) {
-    for (Book& book : catalog) {
-        if (book.getid() == bookId) {
-            return &book;
-        }
-    }
-    return nullptr;
+void printBookDetails(treenode* node) {
+    std::cout << "Book ID: " << node->book_id
+              << " | Name: " << node->title
+              << " | Author: " << node->author
+              << " | Available: " << node->available_copies
+              << " | Library: " << node->lib << '\n';
 }
 
-void printBookDetails(const Book& book) {
-    std::cout << "Book ID: " << book.getid()
-              << " | Name: " << book.getbook_name()
-              << " | Author: " << book.getauthor_name()
-              << " | Available: " << book.getavail_copies()
-              << " | Library: " << book.getlib_name() << '\n';
+int searchByAuthorRecursive(treenode* root, const std::string& author) {
+    if (root == nullptr) {
+        return 0;
+    }
+
+    int found_count = 0;
+    if (case_insensitive_cmp(root->author, author.c_str())) {
+        printBookDetails(root);
+        found_count = 1;
+    }
+
+    found_count += searchByAuthorRecursive(root->left, author);
+    found_count += searchByAuthorRecursive(root->right, author);
+    return found_count;
 }
 }
 
@@ -57,69 +64,51 @@ void User::setuser_password(const std::string& password) {
     user_password = password;
 }
 
-void User::searchBookByName(const std::vector<Book>& catalog,
-                            const std::string& query) const {
-    bool found = false;
-    std::cout << "\nSearch results for book name \"" << query << "\":\n";
-
-    for (const Book& book : catalog) {
-        if (book.getbook_name().find(query) != std::string::npos) {
-            found = true;
-            printBookDetails(book);
-        }
-    }
-
-    if (!found) {
+void User::searchBookByName(treenode* root, const std::string& query) const {
+    std::cout << "\nSearch results for \"" << query << "\":\n";
+    if (search_string(root, query.c_str()) == 0) {
         std::cout << "No matching books found.\n";
     }
 }
 
-void User::searchBookByAuthor(const std::vector<Book>& catalog,
-                              const std::string& author) const {
-    bool found = false;
+void User::searchBookByAuthor(treenode* root, const std::string& author) const {
     std::cout << "\nSearch results for author \"" << author << "\":\n";
-
-    for (const Book& book : catalog) {
-        if (book.getauthor_name().find(author) != std::string::npos) {
-            found = true;
-            printBookDetails(book);
-        }
-    }
-
-    if (!found) {
+    if (searchByAuthorRecursive(root, author) == 0) {
         std::cout << "No matching books found.\n";
     }
 }
 
-bool User::issueBookById(std::vector<Book>& catalog, int bookId) const {
-    Book* book = findBookById(catalog, bookId);
+bool User::issueBookById(treenode* root, int bookId) const {
+    treenode* book = search_id(root, bookId);
     if (book == nullptr) {
         std::cout << "Book not found.\n";
         return false;
     }
 
-    if (!book->issue_copy()) {
+    if (book->available_copies <= 0) {
         std::cout << "No copies available for issue.\n";
         return false;
     }
 
-    std::cout << "Book issued successfully: " << book->getbook_name() << '\n';
+    book->available_copies--;
+    std::cout << "Book issued successfully: " << book->title << '\n';
     return true;
 }
 
-bool User::returnBookById(std::vector<Book>& catalog, int bookId) const {
-    Book* book = findBookById(catalog, bookId);
+bool User::returnBookById(treenode* root, int bookId) const {
+    treenode* book = search_id(root, bookId);
     if (book == nullptr) {
         std::cout << "Book not found.\n";
         return false;
     }
 
-    if (!book->return_copy()) {
+    if (book->available_copies >= book->total_copies) {
         std::cout << "All copies are already in the library.\n";
         return false;
     }
 
-    std::cout << "Book returned successfully: " << book->getbook_name() << '\n';
+    book->available_copies++;
+    std::cout << "Book returned successfully: " << book->title << '\n';
     return true;
 }
 
@@ -130,17 +119,27 @@ SuperUser::SuperUser(const std::string& name,
     : User(name, email, password),
       lib_name(lib) {}
 
-Book SuperUser::createBook(int totalCopies,
-                           const std::string& bookName,
-                           const std::string& authorName) const {
-    return Book(totalCopies, bookName, authorName, lib_name);
+treenode* SuperUser::createBook(int bookId,
+                                const std::string& bookName,
+                                const std::string& authorName,
+                                int totalCopies) const {
+    return createnode(bookId,
+                      lib_name.c_str(),
+                      bookName.c_str(),
+                      authorName.c_str(),
+                      totalCopies);
 }
 
-void SuperUser::addBookToCatalog(std::vector<Book>& catalog,
-                                 int totalCopies,
-                                 const std::string& bookName,
-                                 const std::string& authorName) const {
-    catalog.push_back(createBook(totalCopies, bookName, authorName));
+treenode* SuperUser::addBookToCatalog(treenode* root,
+                                      int bookId,
+                                      const std::string& bookName,
+                                      const std::string& authorName,
+                                      int totalCopies) const {
+    treenode* newnode = createBook(bookId, bookName, authorName, totalCopies);
+    if (newnode == nullptr) {
+        return root;
+    }
+    return insert(root, newnode);
 }
 
 std::string SuperUser::getlib_name() const {

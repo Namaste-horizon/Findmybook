@@ -1,10 +1,7 @@
-// User supports search, issue, and return actions.
-// SuperUser extends User with book creation and catalog management.
 #ifndef USER_HPP
 #define USER_HPP
 
 #include <string>
-#include <vector>
 #include "book.hpp"
 
 class User {
@@ -29,12 +26,12 @@ public:
     void setuser_email(const std::string& email);
     void setuser_password(const std::string& password);
 
-    void searchBookByName(const std::vector<Book>& catalog,
+    void searchBookByName(treenode* root,
                           const std::string& query) const;
-    void searchBookByAuthor(const std::vector<Book>& catalog,
+    void searchBookByAuthor(treenode* root,
                             const std::string& author) const;
-    bool issueBookById(std::vector<Book>& catalog, int bookId) const;
-    bool returnBookById(std::vector<Book>& catalog, int bookId) const;
+    bool issueBookById(treenode* root, int bookId) const;
+    bool returnBookById(treenode* root, int bookId) const;
 };
 
 class SuperUser : public User {
@@ -47,13 +44,15 @@ public:
               const std::string& password,
               const std::string& lib);
 
-    Book createBook(int totalCopies,
+    treenode* createBook(int bookId,
                     const std::string& bookName,
-                    const std::string& authorName) const;
-    void addBookToCatalog(std::vector<Book>& catalog,
-                          int totalCopies,
+                    const std::string& authorName,
+                    int totalCopies) const;
+    treenode* addBookToCatalog(treenode* root,
+                          int bookId,
                           const std::string& bookName,
-                          const std::string& authorName) const;
+                          const std::string& authorName,
+                          int totalCopies) const;
 
     std::string getlib_name() const;
     void setlib_name(const std::string& lib);
