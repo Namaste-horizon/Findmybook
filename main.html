@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FindMyBook - Dashboard</title>
+
+<link rel="stylesheet" href="style.css" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+</head>
+<body class="main-page">
+
+<nav class="topbar">
+    <div class="brand">
+        <h1>FindMyBook</h1>
+        <p>Frontend in HTML/CSS/JS, backend in C++</p>
+    </div>
+
+    <div class="nav-actions">
+        <button id="navSearch" class="ghost" data-roles="user">Search</button>
+        <button id="navMap" class="ghost" data-roles="user">Nearby Libraries</button>
+        <button id="navBookings" class="ghost" data-roles="user">My Bookings</button>
+        <button id="navLibrary" class="ghost" data-roles="lib">Library Panel</button>
+        <button id="navAdmin" class="ghost" data-roles="admin">Admin Panel</button>
+        <button id="logoutBtn" class="primary">Logout</button>
+    </div>
+</nav>
+
+<header class="hero">
+    <div class="hero-card">
+        <div id="roleBadge" class="role-badge">User</div>
+        <h2 id="welcomeTitle">FindMyBook Dashboard</h2>
+        <p id="welcomeSubtitle"></p>
+        <p id="sessionMeta"></p>
+        <div id="appStatus" class="status-banner"></div>
+    </div>
+</header>
+
+<section class="section">
+    <h2 class="section-title">System Snapshot</h2>
+    <div class="stats-grid">
+        <div class="stat-card">
+            <h3 id="stat1Label">Stat 1</h3>
+            <div id="stat1Value" class="stat-value">0</div>
+        </div>
+        <div class="stat-card">
+            <h3 id="stat2Label">Stat 2</h3>
+            <div id="stat2Value" class="stat-value">0</div>
+        </div>
+        <div class="stat-card">
+            <h3 id="stat3Label">Stat 3</h3>
+            <div id="stat3Value" class="stat-value">0</div>
+        </div>
+        <div class="stat-card">
+            <h3 id="stat4Label">Stat 4</h3>
+            <div id="stat4Value" class="stat-value">0</div>
+        </div>
+    </div>
+</section>
+
+<section id="bookSearch" class="section" data-roles="user">
+    <h2 class="section-title">Search Books Across Libraries</h2>
+    <p class="section-copy">Students can search all connected libraries from one place and rent available books directly through the backend.</p>
+    <div class="search-box">
+        <input id="searchInput" placeholder="Search by title, author, genre, or library..." />
+        <button id="searchBtn" class="primary-btn">Search</button>
+    </div>
+    <div id="searchSummary" class="search-summary">Showing all books.</div>
+    <div id="results" class="results-grid"></div>
+</section>
+
+<section id="nearbyLibraries" class="section" data-roles="user">
+    <h2 class="section-title">Nearby Libraries</h2>
+    <p class="section-copy">Leaflet and browser geolocation stay in the frontend, while the C++ backend ranks libraries using distance-based logic.</p>
+    <div id="map"></div>
+    <div id="nearbyLibraryGrid" class="card-grid"></div>
+</section>
+
+<section id="seatReservation" class="section" data-roles="user">
+    <h2 class="section-title">Reserve a Study Seat</h2>
+    <p class="section-copy">Seat booking uses the backend’s greedy allocation logic so one time slot never overbooks the same library.</p>
+    <div class="panel-card">
+        <div class="booking-form">
+            <select id="seatLibrary"></select>
+            <input type="date" id="seatDate" />
+            <select id="seatTime">
+                <option value="">Select time slot</option>
+                <option value="09:00-11:00">09:00-11:00</option>
+                <option value="11:00-13:00">11:00-13:00</option>
+                <option value="14:00-16:00">14:00-16:00</option>
+                <option value="16:00-18:00">16:00-18:00</option>
+            </select>
+            <button id="seatBookBtn" class="primary-btn">Book Seat</button>
+        </div>
+    </div>
+</section>
+
+<section id="myBookings" class="section" data-roles="user">
+    <h2 class="section-title">My Bookings and Rentals</h2>
+    <p class="section-copy">Users can update or delete their own bookings through live CRUD operations backed by JSON storage in the C++ server.</p>
+    <div id="bookingList" class="card-grid"></div>
+</section>
+
+<section id="libraryInventory" class="section" data-roles="lib">
+    <h2 class="section-title">Library Manager Workspace</h2>
+    <div class="two-column">
+        <div class="panel-card">
+            <h3 id="managedLibraryName" class="subsection-title">Linked Library</h3>
+            <p id="managedLibraryMeta" class="section-copy"></p>
+
+            <h3 id="libraryBookFormTitle" class="subsection-title">Add Book</h3>
+            <div class="form-grid">
+                <input id="bookTitleInput" placeholder="Book title" />
+                <input id="bookAuthorInput" placeholder="Author" />
+                <input id="bookGenreInput" placeholder="Genre" />
+                <input id="bookTotalCopiesInput" type="number" min="1" placeholder="Total copies" />
+                <input id="bookAvailableCopiesInput" type="number" min="0" placeholder="Available copies" />
+            </div>
+            <div class="actions">
+                <button id="bookSubmitBtn" class="primary-btn">Save Book</button>
+                <button id="bookResetBtn" class="ghost-btn">Reset</button>
+            </div>
+        </div>
+
+        <div class="panel-card">
+            <h3 class="subsection-title">My Library Inventory</h3>
+            <p class="section-copy">Create, update, or delete books linked to your assigned library.</p>
+            <div id="libraryBookList" class="stack"></div>
+        </div>
+    </div>
+</section>
+
+<section id="libraryBookingsSection" class="section" data-roles="lib">
+    <h2 class="section-title">Bookings For This Library</h2>
+    <p class="section-copy">Library managers can review seat bookings and rentals tied to their branch.</p>
+    <div id="libraryBookingList" class="card-grid"></div>
+</section>
+
+<section id="adminLibraries" class="section" data-roles="admin">
+    <h2 class="section-title">Admin Library Management</h2>
+    <div class="two-column">
+        <div class="panel-card">
+            <h3 id="adminLibraryFormTitle" class="subsection-title">Add Library</h3>
+            <div class="form-grid">
+                <input id="libraryNameInput" placeholder="Library name" />
+                <input id="libraryCityInput" placeholder="City" />
+                <input id="libraryLatInput" type="number" step="0.000001" placeholder="Latitude" />
+                <input id="libraryLngInput" type="number" step="0.000001" placeholder="Longitude" />
+                <input id="librarySeatsInput" type="number" min="1" placeholder="Total seats" />
+            </div>
+            <div class="actions">
+                <button id="librarySubmitBtn" class="primary-btn">Save Library</button>
+                <button id="libraryResetBtn" class="ghost-btn">Reset</button>
+            </div>
+        </div>
+
+        <div class="panel-card">
+            <h3 class="subsection-title">Connected Libraries</h3>
+            <p class="section-copy">Admins control the core library network that the rest of the system depends on.</p>
+            <div id="adminLibraryList" class="stack"></div>
+        </div>
+    </div>
+</section>
+
+<section id="adminBooks" class="section" data-roles="admin">
+    <h2 class="section-title">All Books In The Network</h2>
+    <p class="section-copy">This view reflects the book records managed by libraries and stored through the C++ backend.</p>
+    <div id="systemBookList" class="card-grid"></div>
+</section>
+
+<section id="adminAccounts" class="section" data-roles="admin">
+    <h2 class="section-title">Account Overview</h2>
+    <div class="three-column">
+        <div class="panel-card">
+            <h3 class="subsection-title">Admins</h3>
+            <div id="adminAccountList" class="stack"></div>
+        </div>
+        <div class="panel-card">
+            <h3 class="subsection-title">Users</h3>
+            <div id="userAccountList" class="stack"></div>
+        </div>
+        <div class="panel-card">
+            <h3 class="subsection-title">Library Managers</h3>
+            <div id="libraryAccountList" class="stack"></div>
+        </div>
+    </div>
+</section>
+
+<section id="adminBookings" class="section" data-roles="admin">
+    <h2 class="section-title">System Bookings</h2>
+    <p class="section-copy">Admins can monitor all live bookings and rentals across every library.</p>
+    <div id="adminBookingList" class="card-grid"></div>
+</section>
+
+<footer>
+    FindMyBook uses a C++ backend for auth, inventory, library search, and booking CRUD, with HTML/CSS/JS handling the web interface and map experience.
+</footer>
+
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<script src="main.js"></script>
+</body>
+</html>

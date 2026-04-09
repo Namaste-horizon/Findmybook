@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>FindMyBook - Access Portal</title>
+<link rel="stylesheet" href="style.css" />
+</head>
+<body class="auth-page">
+
+<div class="shell">
+    <section class="intro">
+        <div class="intro-card">
+            <div class="eyebrow">Campus Library Network</div>
+            <h1>Find books, compare libraries, and reserve study space from one portal.</h1>
+            <p>
+                FindMyBook connects students, library managers, and admins to the same C++ backend.
+                The web layer handles the map and interface, while the backend handles search, inventory,
+                bookings, and the shared campus library data.
+            </p>
+
+            <div class="highlights">
+                <div class="highlight">
+                    <strong>Student Flow</strong>
+                    Search books across libraries, locate the nearest library, rent books, and reserve seats.
+                </div>
+                <div class="highlight">
+                    <strong>Library Flow</strong>
+                    Manage inventory and monitor bookings for one library from the same backend data.
+                </div>
+                <div class="highlight">
+                    <strong>Admin Flow</strong>
+                    Add libraries, review activity, and oversee the full campus-wide system.
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="panel">
+        <div class="auth-box">
+            <div id="loginBox">
+                <h2>Login</h2>
+                <p>Choose your role and sign in through the C++ API.</p>
+
+                <div class="stack">
+                    <label for="loginRole">Role</label>
+                    <select id="loginRole">
+                        <option value="user">User</option>
+                        <option value="lib">Library</option>
+                        <option value="admin">Admin</option>
+                    </select>
+
+                    <label for="loginEmail">Email</label>
+                    <input id="loginEmail" type="email" placeholder="name@example.com" />
+
+                    <label for="loginPass">Password</label>
+                    <input id="loginPass" type="password" placeholder="Enter password" />
+
+                    <div id="loginAdminKeyWrap" style="display:none;">
+                        <label for="loginAdminKey">Admin key</label>
+                        <input id="loginAdminKey" type="password" placeholder="Required for admin login" />
+                    </div>
+
+                    <button id="loginBtn">Login</button>
+                </div>
+
+                <div class="toggle">Need an account? <span id="showSignup">Create one</span></div>
+            </div>
+
+            <div id="signupBox" style="display:none;">
+                <h2>Create Account</h2>
+                <p>Signup writes directly to the backend’s role-based data files.</p>
+
+                <div class="stack">
+                    <label for="signupRole">Role</label>
+                    <select id="signupRole">
+                        <option value="user">User</option>
+                        <option value="lib">Library</option>
+                        <option value="admin">Admin</option>
+                    </select>
+
+                    <label for="signupFname">First name</label>
+                    <input id="signupFname" placeholder="First name" />
+
+                    <label for="signupLname">Last name</label>
+                    <input id="signupLname" placeholder="Last name" />
+
+                    <label for="signupEmail">Email</label>
+                    <input id="signupEmail" type="email" placeholder="name@example.com" />
+
+                    <label for="signupPass">Password</label>
+                    <input id="signupPass" type="password" placeholder="Minimum 8 characters" />
+
+                    <div id="signupLibraryWrap" style="display:none;">
+                        <label for="signupLibrary">Managed library</label>
+                        <select id="signupLibrary">
+                            <option value="">Select library</option>
+                        </select>
+                    </div>
+
+                    <div id="signupAdminKeyWrap" style="display:none;">
+                        <label for="signupAdminKey">Admin key</label>
+                        <input id="signupAdminKey" type="password" placeholder="Required for admin signup" />
+                    </div>
+
+                    <button id="signupBtn">Create Account</button>
+                </div>
+
+                <div class="helper">
+                    Library accounts must be attached to an existing library entry. Create the library first from an admin account if needed.
+                </div>
+                <div class="toggle">Already have an account? <span id="showLogin">Login</span></div>
+            </div>
+
+            <div id="authStatus" class="status"></div>
+        </div>
+    </section>
+</div>
+
+<script src="auth.js"></script>
+</body>
+</html>
