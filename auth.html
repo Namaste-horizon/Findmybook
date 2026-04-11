@@ -4,9 +4,214 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>FindMyBook - Access Portal</title>
-<link rel="stylesheet" href="style.css" />
+
+<style>
+:root {
+    --bg: #f4efe7;
+    --card: rgba(255, 255, 255, 0.94);
+    --line: #e4d6c8;
+    --text: #2f241b;
+    --muted: #706153;
+    --accent: #925b2b;
+    --accent-dark: #70441f;
+    --success: #2c7a4b;
+    --danger: #b33a2e;
+    --shadow: 0 18px 40px rgba(63, 39, 19, 0.12);
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: "Segoe UI", sans-serif;
+    color: var(--text);
+    background:
+        radial-gradient(circle at top left, rgba(201, 152, 103, 0.18), transparent 32%),
+        linear-gradient(140deg, #f7f1ea 0%, #efe5da 55%, #f8f3ed 100%);
+}
+
+.shell {
+    min-height: 100vh;
+    display: grid;
+    grid-template-columns: minmax(0, 1.1fr) minmax(340px, 470px);
+}
+
+.intro {
+    padding: 56px;
+    display: flex;
+    align-items: center;
+}
+
+.intro-card {
+    max-width: 620px;
+}
+
+.eyebrow {
+    display: inline-block;
+    padding: 8px 14px;
+    border-radius: 999px;
+    background: rgba(146, 91, 43, 0.12);
+    color: var(--accent-dark);
+    font-size: 13px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+}
+
+.intro h1 {
+    margin: 0;
+    font-size: clamp(38px, 6vw, 64px);
+    line-height: 1.02;
+}
+
+.intro p {
+    font-size: 18px;
+    line-height: 1.7;
+    color: var(--muted);
+    margin: 18px 0 0;
+}
+
+.highlights {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 16px;
+    margin-top: 28px;
+}
+
+.highlight {
+    padding: 18px;
+    background: rgba(255, 255, 255, 0.7);
+    border: 1px solid rgba(146, 91, 43, 0.1);
+    border-radius: 18px;
+    box-shadow: var(--shadow);
+}
+
+.highlight strong {
+    display: block;
+    margin-bottom: 8px;
+    color: var(--accent-dark);
+}
+
+.panel {
+    padding: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.auth-box {
+    width: min(100%, 430px);
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 28px;
+    padding: 28px;
+    box-shadow: var(--shadow);
+}
+
+.auth-box h2 {
+    margin: 0 0 8px;
+    font-size: 28px;
+    color: var(--accent-dark);
+}
+
+.auth-box p {
+    margin: 0 0 20px;
+    color: var(--muted);
+}
+
+.stack {
+    display: grid;
+    gap: 12px;
+}
+
+label {
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: -2px;
+}
+
+input,
+select,
+button {
+    width: 100%;
+    border-radius: 14px;
+    font-size: 15px;
+}
+
+input,
+select {
+    padding: 12px 14px;
+    border: 1px solid var(--line);
+    background: #fffdfb;
+    color: var(--text);
+}
+
+button {
+    border: none;
+    padding: 13px 16px;
+    cursor: pointer;
+    background: var(--accent);
+    color: white;
+    font-weight: 600;
+    margin-top: 6px;
+}
+
+button:hover {
+    background: var(--accent-dark);
+}
+
+.toggle {
+    margin-top: 18px;
+    text-align: center;
+    color: var(--muted);
+}
+
+.toggle span {
+    color: #265f9a;
+    cursor: pointer;
+}
+
+.helper {
+    margin-top: 14px;
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.5;
+}
+
+.status {
+    min-height: 24px;
+    margin-top: 14px;
+    font-size: 14px;
+}
+
+.status.error {
+    color: var(--danger);
+}
+
+.status.success {
+    color: var(--success);
+}
+
+@media (max-width: 920px) {
+    .shell {
+        grid-template-columns: 1fr;
+    }
+
+    .intro,
+    .panel {
+        padding: 24px;
+    }
+
+    .intro {
+        padding-bottom: 0;
+    }
+}
+</style>
 </head>
-<body class="auth-page">
+<body>
 
 <div class="shell">
     <section class="intro">

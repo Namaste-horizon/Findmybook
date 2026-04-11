@@ -1,1 +1,5 @@
-[{"id":"book-1","title":"Data Structures","author":"Mark Allen","genre":"Computer Science","library_id":"lib-1","library":"Central Library","total_copies":1,"available_copies":1,"available":true},{"id":"book-2","title":"Algorithms","author":"Thomas H. Cormen","genre":"Computer Science","library_id":"lib-1","library":"Central Library","total_copies":1,"available_copies":1,"available":true},{"id":"book-3","title":"Artificial Intelligence","author":"Stuart Russell","genre":"AI","library_id":"lib-1","library":"Central Library","total_copies":1,"available_copies":1,"available":true}]
+[
+  {"id":"book-1","title":"Data Structures","author":"Mark Allen","genre":"Computer Science","library_id":"lib-1","library":"Central Library","total_copies":1,"available_copies":1,"available":true},
+  {"id":"book-2","title":"Algorithms","author":"Thomas H. Cormen","genre":"Computer Science","library_id":"lib-1","library":"Central Library","total_copies":1,"available_copies":1,"available":true},
+  {"id":"book-3","title":"Artificial Intelligence","author":"Stuart Russell","genre":"AI","library_id":"lib-1","library":"Central Library","total_copies":1,"available_copies":1,"available":true}
+]
