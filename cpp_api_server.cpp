@@ -3,18 +3,33 @@
 #include "cpp_api_shared.hpp"
 #include "user.hpp"
 
+#if __has_include(<crow.h>) && __has_include(<crow/middlewares/cors.h>)
+#define FINDMYBOOK_HAS_CROW 1
 #include <crow.h>
 #include <crow/middlewares/cors.h>
+#else
+#define FINDMYBOOK_HAS_CROW 0
+#endif
 
 #include <iostream>
 #include <mutex>
 #include <string>
 #include <vector>
 
+#if !FINDMYBOOK_HAS_CROW
+#include <cerrno>
+#include <cstring>
+#include <netinet/in.h>
+#include <sys/socket.h>
+#include <unistd.h>
+#endif
+
 using namespace cpp_api;
 
 namespace {
+#if FINDMYBOOK_HAS_CROW
 using App = crow::App<crow::CORSHandler>;
+#endif
 std::mutex api_mutex;
 
 HttpResponse handle_people_list(const std::string& role) {
@@ -849,6 +864,7 @@ HttpResponse handle_booking_delete(const std::string& public_id) {
     return json_error(404, "route not found");
 }
 
+#if FINDMYBOOK_HAS_CROW
 HttpRequest make_request(const crow::request& req) {
     HttpRequest request;
     request.method = crow::method_name(req.method);
@@ -1054,10 +1070,67 @@ void register_routes(App& app) {
         });
     });
 }
+#else
+int run_socket_server(int port) {
+    int server_socket = socket(AF_INET, SOCK_STREAM, 0);
+    if (server_socket < 0) {
+        std::cerr << "Failed to create server socket: " << std::strerror(errno) << "\n";
+        return 1;
+    }
+
+    int enabled = 1;
+    setsockopt(server_socket, SOL_SOCKET, SO_REUSEADDR, &enabled, sizeof(enabled));
+
+    sockaddr_in address{};
+    address.sin_family = AF_INET;
+    address.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
+    address.sin_port = htons(static_cast<uint16_t>(port));
+
+    if (::bind(server_socket, reinterpret_cast<sockaddr*>(&address), sizeof(address)) < 0) {
+        std::cerr << "Failed to bind server socket: " << std::strerror(errno) << "\n";
+        close(server_socket);
+        return 1;
+    }
+
+    if (::listen(server_socket, 16) < 0) {
+        std::cerr << "Failed to listen on server socket: " << std::strerror(errno) << "\n";
+        close(server_socket);
+        return 1;
+    }
+
+    std::cout << "C++ API server running on http://127.0.0.1:" << port
+              << " (Crow headers not found, using built-in socket server)\n";
+
+    while (true) {
+        int client_socket = ::accept(server_socket, nullptr, nullptr);
+        if (client_socket < 0) {
+            continue;
+        }
+
+        HttpRequest request;
+        HttpResponse response;
+        {
+            std::lock_guard<std::mutex> lock(api_mutex);
+            if (read_http_request(client_socket, request)) {
+                response = route_request(request);
+            } else {
+                response = json_error(400, "bad request");
+            }
+        }
+
+        send_http_response(client_socket, response);
+        close(client_socket);
+    }
+
+    close(server_socket);
+    return 0;
+}
+#endif
 
 }  // namespace
 
 int run_cpp_api_server(int port) {
+#if FINDMYBOOK_HAS_CROW
     App app;
     app.loglevel(crow::LogLevel::Warning);
     configure_cors(app);
@@ -1066,4 +1139,7 @@ int run_cpp_api_server(int port) {
     std::cout << "C++ API server running with Crow on http://127.0.0.1:" << port << "\n";
     app.port(static_cast<uint16_t>(port)).run();
     return 0;
+#else
+    return run_socket_server(port);
+#endif
 }
